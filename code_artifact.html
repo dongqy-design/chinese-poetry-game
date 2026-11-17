@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>翰墨詩心：經典詩詞與家訓闖關</title>
+  <!-- 載入 Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 載入 Google Fonts：Noto Serif TC (宋體) 與 Ma Shan Zheng (毛筆書法體) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@400;600;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --paper-bg: #f6f1e7;
+      --paper-card: #fcf9f2;
+      --ink-black: #1e1c1a;
+      --ink-gray: #524d47;
+      --ink-light: #8c847a;
+      --cinnabar: #b22c26; /* 硃砂印章紅 */
+      --jade-green: #2d6a4f; /* 翡翠竹青綠 */
+      --gold-accent: #b58938; /* 泥金 */
+    }
+
+    body {
+      font-family: 'Noto Serif TC', serif;
+      background-color: var(--paper-bg);
+      color: var(--ink-black);
+      /* 宣紙纖維與水墨暈染背景 */
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(45, 42, 38, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 88% 82%, rgba(45, 42, 38, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(181, 137, 56, 0.04) 0%, transparent 70%),
+        repeating-linear-gradient(0deg, rgba(130, 120, 105, 0.03) 0px, rgba(130, 120, 105, 0.03) 1px, transparent 1px, transparent 4px);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .font-calligraphy {
+      font-family: 'Ma Shan Zheng', cursive, serif;
+    }
+
+    /* 古典書卷邊框與陰影 */
+    .scroll-card {
+      background-color: var(--paper-card);
+      border: 1px solid #dcd3c1;
+      box-shadow:
+        0 10px 30px -10px rgba(30, 28, 26, 0.12),
+        inset 0 0 24px rgba(218, 206, 185, 0.35);
+      position: relative;
+    }
+
+    /* 四角回紋裝飾 */
+    .corner-ornament {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: #b8a990;
+      pointer-events: none;
+    }
+    .corner-tl { top: 8px; left: 8px; border-top: 2px solid; border-left: 2px solid; }
+    .corner-tr { top: 8px; right: 8px; border-top: 2px solid; border-right: 2px solid; }
+    .corner-bl { bottom: 8px; left: 8px; border-bottom: 2px solid; border-left: 2px solid; }
+    .corner-br { bottom: 8px; right: 8px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    /* 印章樣式 */
+    .seal-stamp {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2.5px solid var(--cinnabar);
+      color: var(--cinnabar);
+      border-radius: 6px;
+      font-family: 'Ma Shan Zheng', cursive;
+      box-shadow: inset 0 0 0 1px rgba(178, 44, 38, 0.25);
+      transform: rotate(-4deg);
+      user-select: none;
+    }
+
+    .seal-stamp-filled {
+      background-color: var(--cinnabar);
+      color: #fcf9f2;
+      border: 2px solid #8e1f1a;
+      border-radius: 6px;
+      font-family: 'Ma Shan Zheng', cursive;
+      box-shadow: 2px 3px 0 rgba(142, 31, 26, 0.25);
+    }
+
+    .seal-jade {
+      border-color: var(--jade-green);
+      color: var(--jade-green);
+      background-color: rgba(45, 106, 79, 0.08);
+    }
+
+    .seal-crimson {
+      border-color: var(--cinnabar);
+      color: var(--cinnabar);
+      background-color: rgba(178, 44, 38, 0.08);
+    }
+
+    /* 印章蓋下動畫 */
+    @keyframes stampDrop {
+      0% {
+        opacity: 0;
+        transform: scale(2.2) rotate(-15deg);
+      }
+      70% {
+        opacity: 1;
+        transform: scale(0.95) rotate(-3deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(-4deg);
+      }
+    }
+
+    .animate-stamp {
+      animation: stampDrop 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* 選項按鈕水墨交互 */
+    .option-btn {
+      transition: all 0.22s ease;
+      background-color: rgba(255, 253, 248, 0.85);
+      border: 1.5px solid #d5cab7;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: #6b5e4c;
+      background-color: #f3ece0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 28, 26, 0.08);
+    }
+    .option-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .option-correct {
+      background-color: #e8f3ee !important;
+      border-color: var(--jade-green) !important;
+      color: #1b4332 !important;
+      box-shadow: 0 0 0 1px var(--jade-green);
+    }
+
+    .option-wrong {
+      background-color: #fbeaea !important;
+      border-color: var(--cinnabar) !important;
+      color: #7f1d1d !important;
+      box-shadow: 0 0 0 1px var(--cinnabar);
+    }
+
+    .option-dimmed {
+      opacity: 0.55;
+    }
+
+    /* 水墨山水裝飾 SVG 浮動 */
+    @keyframes mistFloat {
+      0%, 100% { transform: translateX(0px); }
+      50% { transform: translateX(12px); }
+    }
+    .mist-anim {
+      animation: mistFloat 12s ease-in-out infinite;
+    }
+
+    /* 平滑展開 */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-up {
+      animation: fadeSlideUp 0.35s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-between py-4 px-3 sm:py-8 sm:px-6 relative">
+
+  <!-- 背景古典水墨遠山與雲氣裝飾 (純 SVG，無外部依賴) -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+    <svg class="w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="inkMount1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2b2825" stop-opacity="0.65" />
+          <stop offset="100%" stop-color="#f6f1e7" stop-opacity="0" />
+        </linearGradient>
+        <linearGradient id="inkMount2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5c564e" stop-opacity="0.4" />
+          <stop offset="100%" stop-color="#f6f1e7" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <!-- 遠山 -->
+      <path d="M-50,620 Q180,410 390,550 T850,480 T1280,580 L1280,820 L-50,820 Z" fill="url(#inkMount2)" />
+      <!-- 近嶺 -->
+      <path d="M-80,700 Q240,520 520,660 T1050,560 L1260,650 L1260,820 L-80,820 Z" fill="url(#inkMount1)" />
+      <!-- 墨竹剪影 (右側) -->
+      <g transform="translate(1060, 120)" fill="#2b2825" opacity="0.45">
+        <rect x="20" y="0" width="4" height="450" rx="2" />
+        <rect x="55" y="60" width="3" height="390" rx="1.5" />
+        <path d="M22,80 Q-15,65 -35,85 Q-10,85 22,82 Z" />
+        <path d="M24,130 Q60,110 85,130 Q55,132 24,132 Z" />
+        <path d="M22,210 Q-20,195 -45,220 Q-15,218 22,213 Z" />
+        <path d="M57,170 Q95,150 115,172 Q85,174 57,172 Z" />
+      </g>
+      <!-- 水墨太陽/明月 -->
+      <circle cx="960" cy="150" r="46" fill="#b22c26" opacity="0.16" />
+    </svg>
+  </div>
+
+  <!-- 頂部工具列：標題與音效開關 -->
+  <header class="w-full max-w-3xl flex items-center justify-between z-10 mb-4 px-1">
+    <div class="flex items-center gap-2.5">
+      <span class="seal-stamp-filled px-2 py-0.5 text-lg tracking-widest">雅集</span>
+      <span class="text-sm sm:text-base font-semibold tracking-wider text-[#4a443d]">經典詩詞與家訓大挑戰</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="soundToggleBtn" type="button" aria-label="切換古風音效"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#cfc4b0] bg-[#fcf9f2]/90 hover:bg-[#efe8da] text-xs sm:text-sm font-medium text-[#3d3832] transition shadow-sm">
+        <span id="soundIcon">🔔</span>
+        <span id="soundLabel">雅音：開</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 主遊戲容器 -->
+  <main class="w-full max-w-3xl z-10 my-auto">
+
+    <!-- ==================== 1. 開始畫面 ==================== -->
+    <section id="startScreen" class="scroll-card rounded-2xl p-6 sm:p-10 text-center animate-fade-up">
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+
+      <div class="inline-block mb-3">
+        <span class="seal-stamp px-3 py-1 text-base sm:text-lg tracking-widest">文心雕龍 · 詩韻流芳</span>
+      </div>
+
+      <h1 class="font-calligraphy text-4xl sm:text-6xl text-[#1e1c1a] tracking-wider my-3 leading-tight">
+        翰墨詩心
+      </h1>
+      <p class="text-lg sm:text-xl font-bold text-[#7c2d27] tracking-widest mb-6">
+        經典詩詞與家訓闖關
+      </p>
+
+      <div class="max-w-xl mx-auto bg-[#f4ede0]/80 border border-[#dfd5c3] rounded-xl p-4 sm:p-5 text-left mb-7">
+        <h2 class="text-sm font-bold text-[#5c5346] tracking-wider mb-2.5 flex items-center gap-2">
+          <span class="w-1.5 h-4 bg-[#b22c26] rounded-full inline-block"></span>
+          【雅集規矩】
+        </h2>
+        <ul class="space-y-2 text-sm sm:text-base text-[#3b3630] leading-relaxed">
+          <li class="flex items-start gap-2">
+            <span class="text-[#b22c26] font-bold">壹、</span>
+            <span>收錄《朱子家訓》、《行宮》、《赤壁》、《無題》、《錦瑟》、《畫眉鳥》、《滿江紅》等<strong>十道精選試題</strong>，涵蓋內容大意、詞語解釋與修辭賞析。</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-[#b22c26] font-bold">貳、</span>
+            <span>每題基礎 <strong>10 分</strong>，連續答對可觸發「連珠妙語」連擊加成（每次連擊額外 +2 分）。</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-[#b22c26] font-bold">參、</span>
+            <span>擁有 <strong>三顆文心</strong>，答錯一題損耗一顆（文心耗盡仍可繼續作答以完成賞析，但將影響最終功名評定）。</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button id="startBtn" type="button"
+          class="w-full sm:w-auto px-10 py-3.5 rounded-xl bg-[#b22c26] hover:bg-[#96221d] text-[#fcf9f2] font-bold text-lg tracking-widest shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer">
+          展卷闖關
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 2. 答題畫面 ==================== -->
+    <section id="quizScreen" class="hidden scroll-card rounded-2xl p-5 sm:p-8">
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+
+      <!-- 頂部狀態儀表板 -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-[#e2d8c7]">
+        <!-- 進度 -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs sm:text-sm font-semibold text-[#6b6257]">關卡進度</span>
+          <span class="px-2.5 py-0.5 rounded-lg bg-[#ede4d3] text-[#1e1c1a] font-bold text-sm sm:text-base">
+            第 <span id="currentQNum">1</span> / 10 題
+          </span>
+        </div>
+
+        <!-- 文心 (生命值) -->
+        <div class="flex items-center gap-1.5" title="文心狀態">
+          <span class="text-xs sm:text-sm font-semibold text-[#6b6257] mr-1">文心</span>
+          <div id="heartsContainer" class="flex items-center gap-1 text-lg sm:text-xl">
+            <!-- JS 動態渲染 -->
+          </div>
+        </div>
+
+        <!-- 分數與連擊 -->
+        <div class="flex items-center gap-3">
+          <div id="comboBadge" class="hidden px-2.5 py-0.5 rounded-full bg-[#b58938]/15 border border-[#b58938] text-[#8c651e] text-xs sm:text-sm font-bold">
+            🔥 <span id="comboCount">0</span> 連擊
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-[#6b6257] block leading-none">雅集積分</span>
+            <span id="scoreDisplay" class="text-xl sm:text-2xl font-black text-[#b22c26]">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 進度條 -->
+      <div class="w-full h-1.5 bg-[#e5dccb] rounded-full overflow-hidden mb-6">
+        <div id="progressBar" class="h-full bg-[#b22c26] transition-all duration-500 rounded-full" style="width: 10%;"></div>
+      </div>
+
+      <!-- 題目區域 -->
+      <div class="mb-6 relative">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span id="sourceTag" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#2b2825] text-[#f6f1e7] text-xs sm:text-sm font-semibold tracking-wider">
+            <span>📜</span>
+            <span id="sourceText">《朱子家訓》</span>
+          </span>
+          <span id="categoryTag" class="text-xs font-medium text-[#756b5e] bg-[#efe8da] px-2.5 py-1 rounded-md border border-[#ded3c0]">
+            修辭與主旨
+          </span>
+        </div>
+
+        <div class="flex items-start justify-between gap-4">
+          <h2 id="questionText" class="text-lg sm:text-xl font-bold text-[#1e1c1a] leading-relaxed tracking-wide">
+            題目載入中...
+          </h2>
+          <!-- 結果印章 (作答後顯示) -->
+          <div id="resultStamp" class="hidden shrink-0 px-3 py-1 text-2xl sm:text-3xl font-bold tracking-widest">
+            妙哉
+          </div>
+        </div>
+      </div>
+
+      <!-- 四個選項 (A, B, C, D) -->
+      <div id="optionsContainer" class="grid grid-cols-1 gap-3 mb-6">
+        <!-- JS 動態生成選項按鈕 -->
+      </div>
+
+      <!-- 名師賞析面板 (作答後平滑展開) -->
+      <div id="explanationBox" class="hidden rounded-xl bg-[#f3ece0] border-l-4 border-[#b22c26] p-4 sm:p-5 mb-5 animate-fade-up">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="seal-stamp-filled px-2 py-0.5 text-xs tracking-wider">名師賞析</span>
+          <span id="feedbackTitle" class="font-bold text-sm sm:text-base text-[#1e1c1a]">解析詳情</span>
+        </div>
+        <p id="explanationText" class="text-sm sm:text-base text-[#3a352f] leading-relaxed">
+          解析內容
+        </p>
+      </div>
+
+      <!-- 下一題按鈕 -->
+      <div id="nextActionArea" class="hidden flex justify-end animate-fade-up">
+        <button id="nextBtn" type="button"
+          class="w-full sm:w-auto px-8 py-3 rounded-xl bg-[#2b2825] hover:bg-[#1a1816] text-[#fcf9f2] font-bold text-base tracking-widest shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+          <span id="nextBtnText">下一關</span>
+          <span>➔</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 3. 結算畫面 ==================== -->
+    <section id="resultScreen" class="hidden scroll-card rounded-2xl p-6 sm:p-9 animate-fade-up">
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+
+      <div class="text-center border-b border-[#e2d8c7] pb-6 mb-6">
+        <span class="text-xs sm:text-sm font-semibold tracking-widest text-[#6b6257] uppercase">雅集榜單 · 功名評定</span>
+
+        <div class="my-4 flex flex-col items-center">
+          <div id="rankSeal" class="seal-stamp px-6 py-2 text-3xl sm:text-5xl font-bold tracking-widest mb-3">
+            翰林學士
+          </div>
+          <p id="rankDesc" class="text-sm sm:text-base text-[#4d463e] max-w-md">
+            才高八斗，學富五車，對古典詩詞與先賢家訓瞭若指掌！
+          </p>
+        </div>
+
+        <!-- 數據統計卡片 -->
+        <div class="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-lg mx-auto mt-5">
+          <div class="bg-[#f4ede0] border border-[#dfd5c3] rounded-xl p-3">
+            <span class="text-xs text-[#6b6257] block">總積分</span>
+            <span id="finalScore" class="text-2xl sm:text-3xl font-black text-[#b22c26]">100</span>
+          </div>
+          <div class="bg-[#f4ede0] border border-[#dfd5c3] rounded-xl p-3">
+            <span class="text-xs text-[#6b6257] block">答對題數</span>
+            <span id="finalCorrect" class="text-2xl sm:text-3xl font-black text-[#2d6a4f]">10 / 10</span>
+          </div>
+          <div class="bg-[#f4ede0] border border-[#dfd5c3] rounded-xl p-3">
+            <span class="text-xs text-[#6b6257] block">最高連擊</span>
+            <span id="finalMaxCombo" class="text-2xl sm:text-3xl font-black text-[#b58938]">10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 錯題回顧區 -->
+      <div class="mb-7">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-base sm:text-lg font-bold text-[#1e1c1a] flex items-center gap-2">
+            <span class="w-1.5 h-5 bg-[#b22c26] rounded-full inline-block"></span>
+            錯題溫故與賞析
+          </h3>
+          <span id="mistakeCountTag" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#efe8da] text-[#5c5346]">
+            共 0 題待溫習
+          </span>
+        </div>
+
+        <div id="mistakesList" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+          <!-- JS 動態生成錯題或全對祝賀 -->
+        </div>
+      </div>
+
+      <!-- 底部操作按鈕：重新挑戰 & 一鍵複製題庫 -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[#e2d8c7]">
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <button id="copyTextBtn" type="button"
+            class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-[#b8a990] bg-[#fcf9f2] hover:bg-[#efe8da] text-xs sm:text-sm font-bold text-[#3b3630] transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>📋</span>
+            <span>複製純文字題庫</span>
+          </button>
+          <button id="copyJsonBtn" type="button"
+            class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-[#b8a990] bg-[#fcf9f2] hover:bg-[#efe8da] text-xs sm:text-sm font-bold text-[#3b3630] transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>{ }</span>
+            <span>複製 JSON 題庫</span>
+          </button>
+        </div>
+
+        <button id="restartBtn" type="button"
+          class="w-full sm:w-auto px-8 py-3 rounded-xl bg-[#b22c26] hover:bg-[#96221d] text-[#fcf9f2] font-bold text-base tracking-widest shadow-md transition cursor-pointer">
+          重整旗鼓 · 再戰一局
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 頁尾版權與提示訊息框 (替代 alert) -->
+  <footer class="w-full max-w-3xl text-center text-xs text-[#7a7165] mt-5 z-10">
+    文心傳薪 · 經典詩詞與家訓互動賞析雅集
+  </footer>
+
+  <!-- 浮動 Toast 提示框 -->
+  <div id="toastMsg" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-2.5 rounded-full bg-[#2b2825] text-[#fcf9f2] text-sm font-medium shadow-xl border border-[#b58938] transition-opacity duration-300">
+    已成功複製到剪貼簿！
+  </div>
+
+  <script>
+    /**
+     * 題庫資料：嚴格採用指定的 10 道題目、選項與詳細解析
+     */
+    const QUIZ_BANK = [
+      {
+        id: 1,
+        source: "《朱子家訓》· 朱伯廬",
+        category: "修辭與道理",
+        question: "在朱伯廬《朱子家訓》中，「一粥一飯，當思來處不易；半絲半縷，恆念物力維艱」這兩句主要運用了什麼修辭手法，並帶出什麼道理？",
+        correctAnswer: "對偶；勸勉世人要愛惜物力、勤儉節約",
+        distractors: [
+          "排比；強調農業生產的辛苦與不易",
+          "誇飾；批評當時社會鋪張浪費的風氣",
+          "反問；質疑人們為何不懂得珍惜糧食"
+        ],
+        explanation: "「一粥一飯」對「半絲半縷」，「當思來處不易」對「恆念物力維艱」，字數相等、詞性相對，為工整的對偶，主旨在勸勉勤儉節約。"
+      },
+      {
+        id: 2,
+        source: "《行宮》· 元稹",
+        category: "表現手法與深層含義",
+        question: "元稹《行宮》：「寥落古行宮，宮花寂寞紅。白頭宮女在，閒坐說玄宗。」詩中「宮花寂寞紅」一句運用了「以樂景寫哀情」的手法，其深層含義是什麼？",
+        correctAnswer: "以宮花盛開的豔麗反襯行宮的荒涼與宮女的孤寂",
+        distractors: [
+          "讚美行宮雖然無人居住，但花園依然保養得宜",
+          "象徵唐玄宗時期的繁華盛世將會再度重現",
+          "暗示宮女們因為無所事事，只能終日賞花解悶"
+        ],
+        explanation: "紅花盛開本是生機勃勃的樂景，但置於「寥落古行宮」中，反而更強烈地反襯出人去樓空、紅顏老去的淒涼感。"
+      },
+      {
+        id: 3,
+        source: "《酬樂天揚州初逢席上見贈》· 劉禹錫",
+        category: "典故賞析",
+        question: "劉禹錫《酬樂天揚州初逢席上見贈》：「懷舊空吟聞笛賦，到鄉翻似爛柯人。」句中運用了兩個典故，下列對這兩個典故的解釋何者正確？",
+        correctAnswer: "「聞笛賦」表達對故友的悼念；「爛柯人」感嘆貶謫歲月漫長、世事全非",
+        distractors: [
+          "「聞笛賦」表達對音樂的熱愛；「爛柯人」感嘆自己年老體衰、無力報國",
+          "「聞笛賦」思念遠方的親人；「爛柯人」形容歸鄉路途遙遠、險阻重重",
+          "「聞笛賦」讚美好友白居易的才華；「爛柯人」諷刺朝廷奸臣當道"
+        ],
+        explanation: "「聞笛賦」指西晉向秀的《思舊賦》，悼念亡友嵇康、呂安；「爛柯人」指晉人王質觀棋爛柯的傳說，感嘆被貶二十三年後人事全非。"
+      },
+      {
+        id: 4,
+        source: "《赤壁》· 杜牧",
+        category: "詞語解釋",
+        question: "杜牧《赤壁》：「折戟沉沙鐵未銷，自將磨洗認前朝。」句中的「將」字應如何解釋？",
+        correctAnswer: "拿、取",
+        distractors: [
+          "將要、快要",
+          "將領、軍官",
+          "帶領、率領"
+        ],
+        explanation: "「自將磨洗」意指自己拿起這把折斷的戟進行磨洗，因此「將」在此處作動詞，解釋為「拿、取」。"
+      },
+      {
+        id: 5,
+        source: "《赤壁》· 杜牧",
+        category: "修辭手法",
+        question: "杜牧《赤壁》末兩句：「東風不與周郎便，銅雀春深鎖二喬。」作者藉「二喬」的命運來反映東吳的存亡，這是運用了哪一種修辭手法？",
+        correctAnswer: "借代（以小見大）",
+        distractors: [
+          "擬人",
+          "設問",
+          "頂真"
+        ],
+        explanation: "大喬與小喬是東吳的兩位美女，分別嫁給孫策與周瑜，作者以「二喬」的命運借代整個東吳政權的安危，屬於借代（以小見大）的手法。"
+      },
+      {
+        id: 6,
+        source: "《無題》· 李商隱",
+        category: "修辭手法",
+        question: "李商隱《無題》：「春蠶到死絲方盡，蠟炬成灰淚始乾。」這兩句千古名句最主要運用了哪兩種修辭手法來表現對愛情的至死不渝？",
+        correctAnswer: "對偶、雙關",
+        distractors: [
+          "反諷、誇飾",
+          "層遞、映襯",
+          "呼告、擬物"
+        ],
+        explanation: "上下句字數相等、結構對稱，為「對偶」；同時「絲」諧音「思」（相思），「淚」既指蠟燭油也指人的眼淚，為「雙關」。"
+      },
+      {
+        id: 7,
+        source: "《錦瑟》· 李商隱",
+        category: "詩意與典故",
+        question: "李商隱《錦瑟》：「莊生曉夢迷蝴蝶，望帝春心託杜鵑。」下列關於這兩句詩意與典故的理解，何者最恰當？",
+        correctAnswer: "借莊周夢蝶與杜宇化鵑的典故，抒發人生如夢的迷惘與深沉的哀怨",
+        distractors: [
+          "描寫春天早晨蝴蝶飛舞、杜鵑啼叫的明媚風光，表達對大自然的熱愛",
+          "勸勉世人要像莊子一樣看破紅塵，不要對世俗名利有過多執著",
+          "讚美古代蜀國君主望帝勤政愛民，死後依然化為杜鵑鳥催促農耕"
+        ],
+        explanation: "詩人運用莊周夢蝶（分不清夢境與現實）與望帝化鵑（啼血哀鳴）兩個典故，營造出朦朧哀婉的意境，抒發對往事如夢與身世的悲慨。"
+      },
+      {
+        id: 8,
+        source: "《畫眉鳥》· 歐陽修",
+        category: "內容主旨",
+        question: "歐陽修《畫眉鳥》：「百囀千聲隨意移，山花紅紫樹高低。始知鎖向金籠聽，不及林間自在啼。」這首詩的核心主旨是什麼？",
+        correctAnswer: "讚美自由自在的生活，寄託詩人擺脫束縛、嚮往自然的心境",
+        distractors: [
+          "批評養鳥之人殘忍虐待動物，呼籲世人要愛護野生鳥類",
+          "感嘆自己懷才不遇，就像被關在金籠裡的畫眉鳥一樣無法施展抱負",
+          "描寫山林風景優美，勸導人們隱居山林、遠離城市喧囂"
+        ],
+        explanation: "詩中將「鎖向金籠」與「林間自在啼」作強烈對比，點出失去自由後連歌聲都失去靈氣，藉此讚美自由、寄託嚮往無拘無束生活的心境。"
+      },
+      {
+        id: 9,
+        source: "《滿江紅》· 岳飛",
+        category: "詞語解釋",
+        question: "岳飛《滿江紅》：「怒髮衝冠，憑欄處、瀟瀟雨歇。」句中「憑欄」一詞的正確解釋是什麼？",
+        correctAnswer: "靠著欄杆",
+        distractors: [
+          "憑藉著阻攔",
+          "隨意地觀看",
+          "憤怒地拍打"
+        ],
+        explanation: "「憑」有倚靠、靠著的意思，「欄」指欄杆。「憑欄處」即指靠著欄杆的地方，描寫詞人登高遠望的姿態。"
+      },
+      {
+        id: 10,
+        source: "《滿江紅》· 岳飛",
+        category: "篇章結構與情感",
+        question: "岳飛《滿江紅》：「靖康恥，猶未雪；臣子恨，何時滅！」這幾句在詞中起到了什麼作用？",
+        correctAnswer: "點明「壯懷激烈」的具體原因，將全詞悲憤愛國的情感推向高潮",
+        distractors: [
+          "交代詞人即將退休歸隱的無奈與對朝廷的失望",
+          "描寫戰場上兩軍交鋒的慘烈景象，渲染緊張氣氛",
+          "回憶北宋滅亡前的繁華景象，與眼前的荒涼形成對比"
+        ],
+        explanation: "「靖康之恥」是北宋亡國、徽欽二帝被俘的奇恥大辱，岳飛藉此點出自己悲憤填膺、矢志報國的根本原因，使全詞的愛國豪情達到頂點。"
+      }
+    ];
+
+    /**
+     * Web Audio API 古風音律合成器 (古箏五聲音階與木魚音效，零外部音效檔依賴)
+     */
+    class GuFengAudio {
+      constructor() {
+        this.enabled = true;
+        this.ctx = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+      }
+
+      // 撥弦音效 (模擬古箏泛音)
+      playPluck(freq, startTime, duration = 0.6, gainVal = 0.18) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const subOsc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        subOsc.type = 'sine';
+        subOsc.frequency.setValueAtTime(freq * 2, startTime); // 八度泛音
+
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.exponentialRampToValueAtTime(gainVal, startTime + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+        osc.connect(gain);
+        subOsc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(startTime);
+        subOsc.start(startTime);
+        osc.stop(startTime + duration);
+        subOsc.stop(startTime + duration);
+      }
+
+      // 翻書/按鈕清脆木魚聲
+      playClick() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(280, now + 0.08);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      }
+
+      // 答對音效：五聲音階上行撥弦 (宮-商-角-徵)
+      playCorrect() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        this.playPluck(523.25, now, 0.45, 0.16);        // C5 (宮)
+        this.playPluck(659.25, now + 0.09, 0.5, 0.16);  // E5 (角)
+        this.playPluck(783.99, now + 0.18, 0.75, 0.2);  // G5 (徵)
+      }
+
+      // 答錯音效：低沉木魚/古琴沉音
+      playWrong() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        this.playPluck(220.0, now, 0.35, 0.18);        // A3
+        this.playPluck(196.0, now + 0.12, 0.5, 0.2);   // G3
+      }
+
+      // 結算凱旋雅樂
+      playFinish() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [523.25, 587.33, 659.25, 783.99, 1046.5];
+        notes.forEach((n, idx) => {
+          this.playPluck(n, now + idx * 0.11, 0.8, 0.16);
+        });
+      }
+    }
+
+    const audio = new GuFengAudio();
+
+    /**
+     * 遊戲狀態管理
+     */
+    const gameState = {
+      questions: [],
+      currentIndex: 0,
+      score: 0,
+      combo: 0,
+      maxCombo: 0,
+      hearts: 3,
+      maxHearts: 3,
+      correctCount: 0,
+      answered: false,
+      mistakes: [] // 記錄錯題
+    };
+
+    // DOM 元素快取
+    const els = {
+      startScreen: document.getElementById('startScreen'),
+      quizScreen: document.getElementById('quizScreen'),
+      resultScreen: document.getElementById('resultScreen'),
+      startBtn: document.getElementById('startBtn'),
+      restartBtn: document.getElementById('restartBtn'),
+      soundToggleBtn: document.getElementById('soundToggleBtn'),
+      soundIcon: document.getElementById('soundIcon'),
+      soundLabel: document.getElementById('soundLabel'),
+      currentQNum: document.getElementById('currentQNum'),
+      heartsContainer: document.getElementById('heartsContainer'),
+      comboBadge: document.getElementById('comboBadge'),
+      comboCount: document.getElementById('comboCount'),
+      scoreDisplay: document.getElementById('scoreDisplay'),
+      progressBar: document.getElementById('progressBar'),
+      sourceText: document.getElementById('sourceText'),
+      categoryTag: document.getElementById('categoryTag'),
+      questionText: document.getElementById('questionText'),
+      resultStamp: document.getElementById('resultStamp'),
+      optionsContainer: document.getElementById('optionsContainer'),
+      explanationBox: document.getElementById('explanationBox'),
+      feedbackTitle: document.getElementById('feedbackTitle'),
+      explanationText: document.getElementById('explanationText'),
+      nextActionArea: document.getElementById('nextActionArea'),
+      nextBtn: document.getElementById('nextBtn'),
+      nextBtnText: document.getElementById('nextBtnText'),
+      rankSeal: document.getElementById('rankSeal'),
+      rankDesc: document.getElementById('rankDesc'),
+      finalScore: document.getElementById('finalScore'),
+      finalCorrect: document.getElementById('finalCorrect'),
+      finalMaxCombo: document.getElementById('finalMaxCombo'),
+      mistakeCountTag: document.getElementById('mistakeCountTag'),
+      mistakesList: document.getElementById('mistakesList'),
+      copyTextBtn: document.getElementById('copyTextBtn'),
+      copyJsonBtn: document.getElementById('copyJsonBtn'),
+      toastMsg: document.getElementById('toastMsg')
+    };
+
+    /**
+     * 洗牌演算法 (Fisher-Yates Shuffle)
+     */
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    /**
+     * 初始化新遊戲（保持題目順序或可自訂，並將每題的 4 個選項隨機打亂）
+     */
+    function startNewGame() {
+      audio.playClick();
+      gameState.questions = QUIZ_BANK.map(q => {
+        const allOptions = [
+          { text: q.correctAnswer, isCorrect: true },
+          ...q.distractors.map(d => ({ text: d, isCorrect: false }))
+        ];
+        return {
+          ...q,
+          shuffledOptions: shuffleArray(allOptions)
+        };
+      });
+
+      gameState.currentIndex = 0;
+      gameState.score = 0;
+      gameState.combo = 0;
+      gameState.maxCombo = 0;
+      gameState.hearts = 3;
+      gameState.correctCount = 0;
+      gameState.answered = false;
+      gameState.mistakes = [];
+
+      els.startScreen.classList.add('hidden');
+      els.resultScreen.classList.add('hidden');
+      els.quizScreen.classList.remove('hidden');
+
+      renderQuestion();
+    }
+
+    /**
+     * 渲染文心 (生命值)
+     */
+    function renderHearts() {
+      els.heartsContainer.innerHTML = '';
+      for (let i = 0; i < gameState.maxHearts; i++) {
+        const span = document.createElement('span');
+        if (i < gameState.hearts) {
+          span.textContent = '❤️';
+          span.className = 'transition-transform duration-300 scale-100';
+        } else {
+          span.textContent = '🖤';
+          span.className = 'opacity-35 transition-transform duration-300 scale-90';
+        }
+        els.heartsContainer.appendChild(span);
+      }
+    }
+
+    /**
+     * 渲染當前題目與選項
+     */
+    function renderQuestion() {
+      const q = gameState.questions[gameState.currentIndex];
+      gameState.answered = false;
+
+      // 更新頂部狀態
+      els.currentQNum.textContent = gameState.currentIndex + 1;
+      els.scoreDisplay.textContent = gameState.score;
+      els.progressBar.style.width = `${((gameState.currentIndex + 1) / gameState.questions.length) * 100}%`;
+      renderHearts();
+
+      if (gameState.combo >= 2) {
+        els.comboBadge.classList.remove('hidden');
+        els.comboCount.textContent = gameState.combo;
+      } else {
+        els.comboBadge.classList.add('hidden');
+      }
+
+      // 更新題目文字與出處
+      els.sourceText.textContent = q.source;
+      els.categoryTag.textContent = q.category;
+      els.questionText.textContent = `${gameState.currentIndex + 1}. ${q.question}`;
+
+      // 重置回饋區與印章
+      els.resultStamp.classList.add('hidden');
+      els.resultStamp.classList.remove('animate-stamp', 'seal-jade', 'seal-crimson');
+      els.explanationBox.classList.add('hidden');
+      els.nextActionArea.classList.add('hidden');
+
+      // 渲染 4 個選項 (A, B, C, D)
+      const labels = ['A', 'B', 'C', 'D'];
+      els.optionsContainer.innerHTML = '';
+
+      q.shuffledOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option-btn w-full text-left p-3.5 sm:p-4 rounded-xl flex items-start gap-3.5 cursor-pointer group';
+        btn.dataset.index = idx;
+
+        btn.innerHTML = `
+          <span class="option-label shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-[#b8a990] bg-[#f4ede0] group-hover:bg-[#2b2825] group-hover:text-[#fcf9f2] group-hover:border-[#2b2825] flex items-center justify-center font-bold text-sm sm:text-base text-[#3b3630] transition">
+            ${labels[idx]}
+          </span>
+          <span class="text-sm sm:text-base font-medium text-[#1e1c1a] leading-snug pt-0.5 flex-1">
+            ${opt.text}
+          </span>
+          <span class="status-icon shrink-0 text-lg font-bold hidden"></span>
+        `;
+
+        btn.addEventListener('click', () => handleSelectOption(idx));
+        els.optionsContainer.appendChild(btn);
+      });
+    }
+
+    /**
+     * 處理玩家選擇選項
+     */
+    function handleSelectOption(selectedIndex) {
+      if (gameState.answered) return;
+      gameState.answered = true;
+
+      const q = gameState.questions[gameState.currentIndex];
+      const chosenOption = q.shuffledOptions[selectedIndex];
+      const buttons = els.optionsContainer.querySelectorAll('button');
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        btn.classList.remove('cursor-pointer');
+        const opt = q.shuffledOptions[idx];
+        const statusIcon = btn.querySelector('.status-icon');
+        const labelSpan = btn.querySelector('.option-label');
+
+        if (opt.isCorrect) {
+          btn.classList.add('option-correct');
+          labelSpan.className = 'option-label shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#2d6a4f] text-white flex items-center justify-center font-bold text-sm sm:text-base';
+          statusIcon.textContent = '✓';
+          statusIcon.classList.remove('hidden');
+          statusIcon.classList.add('text-[#2d6a4f]');
+        } else if (idx === selectedIndex && !opt.isCorrect) {
+          btn.classList.add('option-wrong');
+          labelSpan.className = 'option-label shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#b22c26] text-white flex items-center justify-center font-bold text-sm sm:text-base';
+          statusIcon.textContent = '✕';
+          statusIcon.classList.remove('hidden');
+          statusIcon.classList.add('text-[#b22c26]');
+        } else {
+          btn.classList.add('option-dimmed');
+        }
+      });
+
+      // 判斷對錯與計分
+      if (chosenOption.isCorrect) {
+        audio.playCorrect();
+        gameState.correctCount += 1;
+        gameState.combo += 1;
+        if (gameState.combo > gameState.maxCombo) {
+          gameState.maxCombo = gameState.combo;
+        }
+        const comboBonus = gameState.combo >= 2 ? (gameState.combo - 1) * 2 : 0;
+        const earned = 10 + comboBonus;
+        gameState.score += earned;
+
+        els.scoreDisplay.textContent = gameState.score;
+        if (gameState.combo >= 2) {
+          els.comboBadge.classList.remove('hidden');
+          els.comboCount.textContent = gameState.combo;
+        }
+
+        // 蓋上綠色「妙哉」印章
+        els.resultStamp.textContent = '妙哉';
+        els.resultStamp.classList.remove('hidden');
+        els.resultStamp.classList.add('seal-stamp', 'seal-jade', 'animate-stamp');
+
+        els.feedbackTitle.textContent = comboBonus > 0
+          ? `對答如流！基礎 +10 分，連擊額外 +${comboBonus} 分`
+          : '對答如流！獲得 10 分';
+        els.feedbackTitle.className = 'font-bold text-sm sm:text-base text-[#2d6a4f]';
+        els.explanationBox.style.borderLeftColor = '#2d6a4f';
+      } else {
+        audio.playWrong();
+        gameState.combo = 0;
+        els.comboBadge.classList.add('hidden');
+        if (gameState.hearts > 0) {
+          gameState.hearts -= 1;
+          renderHearts();
+        }
+
+        // 記錄錯題
+        gameState.mistakes.push({
+          number: gameState.currentIndex + 1,
+          source: q.source,
+          question: q.question,
+          yourAnswer: chosenOption.text,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation
+        });
+
+        // 蓋上紅色「惜哉」印章
+        els.resultStamp.textContent = '惜哉';
+        els.resultStamp.classList.remove('hidden');
+        els.resultStamp.classList.add('seal-stamp', 'seal-crimson', 'animate-stamp');
+
+        els.feedbackTitle.textContent = '差之毫釐，請閱名師賞析';
+        els.feedbackTitle.className = 'font-bold text-sm sm:text-base text-[#b22c26]';
+        els.explanationBox.style.borderLeftColor = '#b22c26';
+      }
+
+      // 展開解析與下一題按鈕
+      els.explanationText.textContent = q.explanation;
+      els.explanationBox.classList.remove('hidden');
+
+      els.nextBtnText.textContent =
+        gameState.currentIndex === gameState.questions.length - 1 ? '查看榜單' : '下一關';
+      els.nextActionArea.classList.remove('hidden');
+    }
+
+    /**
+     * 進入下一題或結算榜單
+     */
+    function handleNext() {
+      audio.playClick();
+      if (gameState.currentIndex < gameState.questions.length - 1) {
+        gameState.currentIndex += 1;
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    /**
+     * 顯示結算榜單與文人功名評定
+     */
+    function showResults() {
+      audio.playFinish();
+      els.quizScreen.classList.add('hidden');
+      els.resultScreen.classList.remove('hidden');
+
+      els.finalScore.textContent = gameState.score;
+      els.finalCorrect.textContent = `${gameState.correctCount} / ${gameState.questions.length}`;
+      els.finalMaxCombo.textContent = gameState.maxCombo;
+
+      // 根據答對題數與總分頒發稱號
+      let title = '書山學徒';
+      let desc = '路漫漫其修遠兮，多讀經典、細味詞句，來日必能金榜題名！';
+
+      if (gameState.correctCount === 10 && gameState.hearts > 0) {
+        title = '翰林學士';
+        desc = '十全十美，才高八斗！您對古典詩詞與先賢家訓的領悟已臻化境。';
+      } else if (gameState.score >= 80 || gameState.correctCount >= 8) {
+        title = '進士及第';
+        desc = '腹有詩書氣自華！僅有微瑕，已具備深厚的古典文學素養。';
+      } else if (gameState.score >= 60 || gameState.correctCount >= 6) {
+        title = '秀才初成';
+        desc = '初窺門徑，基礎穩固！若能再細究典故與修辭，定能更上一層樓。';
+      }
+
+      els.rankSeal.textContent = title;
+      els.rankDesc.textContent = desc;
+
+      // 渲染錯題回顧
+      els.mistakeCountTag.textContent = `共 ${gameState.mistakes.length} 題待溫習`;
+      els.mistakesList.innerHTML = '';
+
+      if (gameState.mistakes.length === 0) {
+        els.mistakesList.innerHTML = `
+          <div class="p-6 rounded-xl bg-[#e8f3ee] border border-[#b7dccb] text-center">
+            <p class="text-lg font-bold text-[#1b4332] mb-1">🎉 滿分通關，無一疏漏！</p>
+            <p class="text-sm text-[#2d6a4f]">十道經典詩詞與家訓難題全數精準破解，堪稱當代文曲星！</p>
+          </div>
+        `;
+      } else {
+        gameState.mistakes.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'p-4 rounded-xl bg-[#fcf9f2] border border-[#dfd5c3] shadow-sm';
+          card.innerHTML = `
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <span class="text-xs font-bold px-2 py-0.5 rounded bg-[#2b2825] text-[#fcf9f2]">第 ${item.number} 題 · ${item.source}</span>
+            </div>
+            <p class="text-sm sm:text-base font-bold text-[#1e1c1a] mb-2">${item.question}</p>
+            <div class="space-y-1 text-xs sm:text-sm mb-2">
+              <p class="text-[#b22c26]"><span class="font-bold">✕ 您的作答：</span>${item.yourAnswer}</p>
+              <p class="text-[#2d6a4f]"><span class="font-bold">✓ 正確答案：</span>${item.correctAnswer}</p>
+            </div>
+            <div class="text-xs sm:text-sm text-[#524d47] bg-[#f4ede0] p-2.5 rounded-lg border-l-2 border-[#b58938]">
+              <span class="font-bold text-[#1e1c1a]">【賞析】</span>${item.explanation}
+            </div>
+          `;
+          els.mistakesList.appendChild(card);
+        });
+      }
+    }
+
+    /**
+     * 顯示 Toast 提示訊息
+     */
+    let toastTimer = null;
+    function showToast(message) {
+      els.toastMsg.textContent = message;
+      els.toastMsg.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        els.toastMsg.classList.add('hidden');
+      }, 2600);
+    }
+
+    /**
+     * 複製文字到剪貼簿 (相容 iFrame 環境)
+     */
+    function copyToClipboard(text, successMessage) {
+      audio.playClick();
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMessage);
+      } catch (err) {
+        showToast('複製失敗，請手動選取內容。');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    /**
+     * 匯出純文字題庫
+     */
+    function exportPlainText() {
+      const lines = ['【翰墨詩心：經典詩詞與家訓題庫】\n'];
+      QUIZ_BANK.forEach((q, idx) => {
+        lines.push(`${idx + 1}. [${q.source}] ${q.question}`);
+        lines.push(`   - 正確答案：${q.correctAnswer}`);
+        q.distractors.forEach((d, i) => {
+          lines.push(`   - 干擾選項${i + 1}：${d}`);
+        });
+        lines.push(`   - 解析：${q.explanation}\n`);
+      });
+      copyToClipboard(lines.join('\n'), '已複製「純文字完整題庫」至剪貼簿！');
+    }
+
+    /**
+     * 匯出 JSON 題庫
+     */
+    function exportJson() {
+      const jsonData = QUIZ_BANK.map(({ id, source, category, question, correctAnswer, distractors, explanation }) => ({
+        id,
+        source,
+        category,
+        question,
+        correctAnswer,
+        distractors,
+        explanation
+      }));
+      copyToClipboard(JSON.stringify(jsonData, null, 2), '已複製「JSON 格式題庫」至剪貼簿！');
+    }
+
+    // 綁定事件監聽器
+    els.startBtn.addEventListener('click', startNewGame);
+    els.restartBtn.addEventListener('click', startNewGame);
+    els.nextBtn.addEventListener('click', handleNext);
+    els.copyTextBtn.addEventListener('click', exportPlainText);
+    els.copyJsonBtn.addEventListener('click', exportJson);
+
+    els.soundToggleBtn.addEventListener('click', () => {
+      const isOn = audio.toggle();
+      els.soundIcon.textContent = isOn ? '🔔' : '🔕';
+      els.soundLabel.textContent = isOn ? '雅音：開' : '雅音：關';
+      if (isOn) audio.playClick();
+    });
+  </script>
+</body>
+</html>
